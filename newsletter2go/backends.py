@@ -6,6 +6,10 @@ from django.conf import settings
 
 import requests
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Newsletter2GoEmailBackend(BaseEmailBackend):
     n2g_api_endpoint = 'https://www.newsletter2go.de/de/api/send/email/'
@@ -26,6 +30,8 @@ class Newsletter2GoEmailBackend(BaseEmailBackend):
             from_email = sanitize_address(email.from_email, email.encoding)
             recipients = [sanitize_address(addr, email.encoding)
                           for addr in email.recipients()]
+
+            logger.debug('Sending email from {0} to {1}'.format(from_email, ', '.join(recipients)))
 
             for recipient in recipients:
                 response = requests.post(self.n2g_api_endpoint, {
