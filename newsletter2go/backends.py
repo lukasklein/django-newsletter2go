@@ -34,13 +34,14 @@ class Newsletter2GoEmailBackend(BaseEmailBackend):
             logger.debug('Sending email from {0} to {1}'.format(from_email, ', '.join(recipients)))
 
             for recipient in recipients:
-                response = requests.post(self.n2g_api_endpoint, {
+                payload = {
                     'key': settings.NEWSLETTER2GO_API_KEY,
                     'to': recipient,
                     'from': from_email,
                     'subject': email.subject,
-                    'text': email.body
-                })
+                }
+                payload['html' if email.content_subtype == 'html' else 'text'] = email.body
+                response = requests.post(self.n2g_api_endpoint, payload)
 
                 response_json = response.json()
 
